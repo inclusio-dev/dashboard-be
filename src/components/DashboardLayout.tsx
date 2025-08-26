@@ -14,9 +14,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       // opzionale: await res.json();
 
-      window.alert(
-        "Aggiornamento completato.\nAbbiamo recuperato l’ultima versione dei dati.\nRicarica la pagina per visualizzare gli aggiornamenti."
-      );
+      window.location.reload()
     } catch (err) {
       console.error(err);
       window.alert("Aggiornamento non riuscito. Riprova tra qualche istante.");
@@ -40,7 +38,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             disabled={isRefreshing}
             aria-busy={isRefreshing}
             className="bg-blue-900 px-4 py-2 rounded text-sm hover:bg-blue-950 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
-            title={isRefreshing ? "Aggiornamento in corso…" : "Aggiorna dati"}
+            title={isRefreshing ? "Aggiornamento in corso…" : "Recupera dati"}
           >
             {isRefreshing && (
               <svg
@@ -53,7 +51,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="4" fill="none" />
               </svg>
             )}
-            <span>{isRefreshing ? "Aggiorno…" : "Aggiorna"}</span>
+            <span>{isRefreshing ? "Recupero…" : "Recupera dati"}</span>
           </button>
         </div>
       </header>
