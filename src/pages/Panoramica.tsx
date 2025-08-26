@@ -6,7 +6,7 @@ interface KPI {
 }
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzKBulKgKMUZ0JKp89x2xhlZtA4covcQQOq5fw7SsHL8j0FTLLayvmZuiCuqR4pnHAG/exec";
+  "https://api.accessibilitydays.it/json-storages/excel-be";
 
 const Panoramica = () => {
   const [kpi, setKpi] = useState<KPI[]>([]);
@@ -15,6 +15,7 @@ const Panoramica = () => {
   useEffect(() => {
     fetch(API_URL)
       .then((res) => res.json())
+      .then((obj) => obj.value.data)
       .then((allSheets) => {
         const raw = allSheets["Panoramica"];
         if (!Array.isArray(raw)) {

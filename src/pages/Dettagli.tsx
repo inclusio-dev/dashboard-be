@@ -5,7 +5,7 @@ interface ReportRow {
 }
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzKBulKgKMUZ0JKp89x2xhlZtA4covcQQOq5fw7SsHL8j0FTLLayvmZuiCuqR4pnHAG/exec";
+  "https://api.accessibilitydays.it/json-storages/excel-be";
 
 const Dettagli = () => {
   const [data, setData] = useState<ReportRow[]>([]);
@@ -14,6 +14,7 @@ const Dettagli = () => {
   useEffect(() => {
     fetch(API_URL)
       .then((res) => res.json())
+      .then((obj) => obj.value.data)
       .then((json) => {
         const sheetData = json["Report Pagine Sito Istituzionale"];
         if (!Array.isArray(sheetData)) {

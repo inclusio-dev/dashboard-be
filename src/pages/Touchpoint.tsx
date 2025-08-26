@@ -14,7 +14,7 @@ interface MappaTouchpoint {
 }
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzKBulKgKMUZ0JKp89x2xhlZtA4covcQQOq5fw7SsHL8j0FTLLayvmZuiCuqR4pnHAG/exec";
+  "https://api.accessibilitydays.it/json-storages/excel-be";
 
 const Touchpoint = () => {
   const [mappa, setMappa] = useState<MappaTouchpoint>({});
@@ -22,6 +22,7 @@ const Touchpoint = () => {
   useEffect(() => {
     fetch(API_URL)
       .then((res) => res.json())
+      .then((obj) => obj.value.data)
       .then((allSheets: Record<string, RigaTouchpoint[]>) => {
         const rows = allSheets["Touchpoint"];
         if (!Array.isArray(rows)) return;
