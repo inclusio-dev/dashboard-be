@@ -15,7 +15,7 @@ const norm = (s: string) =>
 
 // -------------------- Types --------------------
 interface Row { [key: string]: unknown }
-interface TpRow { name: string; A: number; AA: number; AAA: number; total: number; unresolved?: number; resolved?: number; recheck?: number }
+interface TpRow { name: string; A: number; AA: number; AAA: number; total: number; unresolved?: number; resolved?: number; recheck?: number; dda?: string }
 
 // -------------------- Parsing --------------------
 function parseTouchpoint(raw: Row[]): TpRow[] {
@@ -42,6 +42,7 @@ function parseTouchpoint(raw: Row[]): TpRow[] {
     const unresolvedKey = findKey([/non risolt/]);
     const resolvedKey = findKey([/risolt[ei]\b(?!.*non)/]);
     const recheckKey = findKey([/recheck/]);
+    const ddaLinkKey = findKey([/link dda/]);
 
     const name = String((nameKey ? r[nameKey] : "") ?? "").trim();
     if (!name) continue;
@@ -64,6 +65,15 @@ function parseTouchpoint(raw: Row[]): TpRow[] {
     if (unresolvedKey) row.unresolved = Number(r[unresolvedKey] ?? 0) || 0;
     if (resolvedKey) row.resolved = Number(r[resolvedKey] ?? 0) || 0;
     if (recheckKey) row.recheck = Number(r[recheckKey] ?? 0) || 0;
+    if (ddaLinkKey) {
+      const raw = r[ddaLinkKey];
+      const val = (typeof raw === "string" ? raw : "").trim();
+
+      if (val && val.toLowerCase() !== "null" && val.toLowerCase() !== "undefined") {
+        row.dda = val;
+      }
+      // altrimenti lascia undefined
+    }
 
     rows.push(row);
   }
@@ -88,7 +98,7 @@ const Badge: React.FC<{ label: string; value: number; className: string; title?:
   </span>
 );
 
-const StackedBar: React.FC<{ A: number; AA: number; AAA: number; total: number; id: string }>
+/* const StackedBar: React.FC<{ A: number; AA: number; AAA: number; total: number; id: string }>
 = ({ A, AA, AAA, total, id }) => {
   const aPct = total ? (A / total) * 100 : 0;
   const aaPct = total ? (AA / total) * 100 : 0;
@@ -105,7 +115,7 @@ const StackedBar: React.FC<{ A: number; AA: number; AAA: number; total: number; 
       </span>
     </div>
   );
-};
+}; */
 
 // -------------------- Main component --------------------
 const Touchpoint: React.FC = () => {
@@ -245,7 +255,7 @@ const Touchpoint: React.FC = () => {
 
       {/* Table */}
       <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
-        <div className="max-h-[60vh] overflow-auto">
+        <div className=" overflow-auto">
           <table className="min-w-full border-separate border-spacing-0" role="table" aria-label="Touchpoint per livello">
             <thead className="sticky top-0 z-10 bg-gray-50 text-left text-sm text-gray-600">
               <tr>
@@ -258,6 +268,7 @@ const Touchpoint: React.FC = () => {
                 <th className="px-4 py-3 font-medium text-center">Non risolte</th>
                 <th className="px-4 py-3 font-medium text-center">In attesa di recheck</th>
                 <th className="px-4 py-3 font-medium text-center">Risolte</th>
+                <th className="px-4 py-3 font-medium text-center">DDA</th>
               </tr>
             </thead>
             <tbody>
@@ -271,6 +282,7 @@ const Touchpoint: React.FC = () => {
                     <td className="px-4 py-3 text-center"><div className="h-4 w-12 animate-pulse rounded bg-gray-200" /></td>
 {/*                     <td className="px-4 py-3"><div className="h-2 w-full animate-pulse rounded bg-gray-200" /></td>
  */}                    <td className="px-4 py-3 text-center"><div className="h-4 w-12 animate-pulse rounded bg-gray-200" /></td>
+                    <td className="px-4 py-3 text-center"><div className="h-4 w-12 animate-pulse rounded bg-gray-200" /></td>
                     <td className="px-4 py-3 text-center"><div className="h-4 w-12 animate-pulse rounded bg-gray-200" /></td>
                     <td className="px-4 py-3 text-center"><div className="h-4 w-12 animate-pulse rounded bg-gray-200" /></td>
                   </tr>
@@ -287,6 +299,10 @@ const Touchpoint: React.FC = () => {
  */}                <td className="px-4 py-3 text-center text-sm tabular-nums">{fmt(r.unresolved ?? 0)}</td>
                     <td className="px-4 py-3 text-center text-sm tabular-nums">{fmt(r.recheck ?? 0)}</td>
                     <td className="px-4 py-3 text-center text-sm tabular-nums">{fmt(r.resolved ?? 0)}</td>
+                    <td className="px-4 py-3 text-center text-sm tabular-nums">{(r.dda?.trim() !== '' && r.dda !== "null" && !!r.dda) ? (<a href={r.dda} target="_blank" rel="noopener noreferrer" aria-label="Apri DDA"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+</svg></a>) : null
+}</td>
                   </tr>
                 ))
               )}
